@@ -7,7 +7,8 @@
  */
 $lib = "/Users/rhett/Music/iTunes/iTunes Library.xml";
 $to = "/Users/rhett/Music/语音备忘录/";
-
+//如果iTunes库索引存在，但文件已经丢失的话，从备胎（TimeMachine或其他备份路径内找同名原始文件）/ 我就手贱用Music重新检查了一下文件，只要Cmd+I查看属性，他就会帮你移动到 `/Users/rhett/Music/iTunes/iTunes Media/Music/Mousebomb-iPhone/语音备忘录/` 但这样文件名匹配不到的，需要时光机里的档案才行。
+$otherBackupFolder = "/Volumes/RHETT_HD/Voice Memos/";
 
 
 # 读取lib 分析备忘录数组
@@ -56,13 +57,20 @@ for($i = 0;$i<$elements->length;$i++)
             {
                 if ( file_exists($newFileName))
                 {
-                    wLog($progress. $newFileName." 已存在,跳过");
+                    wLog($progress.  $location ." -> " . $newFileName." 已存在,跳过");
                 }else{
                     wLog($progress. $location ." -> " . $newFileName);
                     copy($location,$newFileName);
                 }
             }else{
-                wLog($progress. "iTunes库记载的旧文件丢失,跳过:".$location);
+                $locationFromTM =                 $otherBackupFolder.$basename.'.m4a';
+                if (file_exists($locationFromTM))
+                {
+                    wLog($progress. $locationFromTM ." -> " . $newFileName);
+                    copy($locationFromTM,$newFileName);
+                }else{
+                    wLog($progress.  $location ." -> " . $newFileName. " iTunes库记载的旧文件丢失,跳过");
+                }
             }
 
         }
